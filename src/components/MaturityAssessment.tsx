@@ -12,32 +12,21 @@ interface FormData {
   region: string;
 }
 
+interface MaturityResult {
+  score: number;
+  level: string;
+  suggestions: string[];
+  model?: string;
+}
+
 const modes = ['FTL', 'LTL', 'Rail', 'Intermodal', 'Last-mile'];
 const regions = ['North India', 'South India', 'West India', 'East India', 'Pan-India'];
-
-function scoreMaturity(data: FormData): { score: number; level: string; suggestions: string[] } {
-  let score = 30;
-  const fleet = parseInt(data.fleetSize) || 0;
-  if (fleet > 500) score += 20; else if (fleet > 100) score += 12; else if (fleet > 20) score += 6;
-  const vol = parseInt(data.shipmentVolume) || 0;
-  if (vol > 5000) score += 20; else if (vol > 1000) score += 12; else if (vol > 200) score += 6;
-  score += data.transportModes.length * 5;
-  if (data.region === 'Pan-India') score += 10; else score += 5;
-  score = Math.min(score, 100);
-
-  const level = score >= 80 ? 'Advanced' : score >= 55 ? 'Intermediate' : 'Developing';
-  const suggestions = [
-    score < 60 ? 'Implement real-time GPS tracking across fleet' : 'Optimize route prediction models with ML',
-    score < 70 ? 'Adopt automated freight benchmarking' : 'Deploy demand forecasting for capacity planning',
-    data.transportModes.length < 3 ? 'Explore multi-modal transport for cost efficiency' : 'Integrate carbon tracking into transport decisions',
-  ];
-  return { score, level, suggestions };
-}
 
 export default function MaturityAssessment() {
   const [step, setStep] = useState<Step>('input');
   const [form, setForm] = useState<FormData>({ fleetSize: '', shipmentVolume: '', transportModes: [], region: '' });
-  const [result, setResult] = useState<ReturnType<typeof scoreMaturity> | null>(null);
+  const [result, setResult] = useState<MaturityResult | null>(null);
+  const [error, setError] = useState('');
 
   const toggleMode = (m: string) => {
     setForm((f) => ({
@@ -46,12 +35,33 @@ export default function MaturityAssessment() {
     }));
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     setStep('loading');
-    setTimeout(() => {
-      setResult(scoreMaturity(form));
+    setError('');
+    try {
+      const res = await fetch('/api/assess/maturity', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          fleetSize: parseInt(form.fleetSize) || 1,
+          shipmentVolume: parseInt(form.shipmentVolume) || 1,
+          transportModes: form.transportModes,
+          region: form.region,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Assessment failed');
+      setResult({
+        score: data.score,
+        level: data.level,
+        suggestions: data.suggestions,
+        model: data.model,
+      });
       setStep('result');
-    }, 1500);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to get assessment');
+      setStep('input');
+    }
   };
 
   const canSubmit = form.fleetSize && form.shipmentVolume && form.transportModes.length > 0 && form.region;
@@ -131,6 +141,7 @@ export default function MaturityAssessment() {
               <button onClick={handleSubmit} disabled={!canSubmit} className="btn-primary w-full !py-3 disabled:opacity-40">
                 Analyze Maturity
               </button>
+              {error && <div className="mt-4 p-3 bg-red-50 text-red-600 text-sm rounded-lg">{error}</div>}
             </motion.div>
           )}
 
@@ -145,6 +156,7 @@ export default function MaturityAssessment() {
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
               {/* Score ring */}
               <div className="text-center">
+                {result.model && <div className="inline-block px-2 py-0.5 bg-cyan/10 text-cyan text-[10px] font-semibold rounded-full mb-2">{result.model}</div>}
                 <div className="relative w-32 h-32 mx-auto mb-4">
                   <svg viewBox="0 0 100 100" className="w-full h-full -rotate-90">
                     <circle cx="50" cy="50" r="42" stroke="#E2E8F0" strokeWidth="8" fill="none" />

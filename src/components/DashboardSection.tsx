@@ -1,58 +1,57 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import {
   AreaChart, Area, BarChart, Bar,
   XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid,
 } from 'recharts';
 
-/* ─── Sample data ─── */
-const demandData = [
-  { name: 'Jan', demand: 4200, capacity: 4800 },
-  { name: 'Feb', demand: 3800, capacity: 4600 },
-  { name: 'Mar', demand: 5100, capacity: 4800 },
-  { name: 'Apr', demand: 4600, capacity: 5000 },
-  { name: 'May', demand: 5400, capacity: 5200 },
-  { name: 'Jun', demand: 6200, capacity: 5800 },
-  { name: 'Jul', demand: 5800, capacity: 5600 },
-  { name: 'Aug', demand: 6800, capacity: 6200 },
-];
-
-const costIndex = [
-  { name: 'W1', index: 100 }, { name: 'W2', index: 103 }, { name: 'W3', index: 98 },
-  { name: 'W4', index: 106 }, { name: 'W5', index: 112 }, { name: 'W6', index: 108 },
-  { name: 'W7', index: 115 }, { name: 'W8', index: 110 },
-];
-
-const routePerf = [
-  { route: 'DEL-MUM', score: 92 }, { route: 'MUM-BLR', score: 87 },
-  { route: 'DEL-KOL', score: 78 }, { route: 'CHN-HYD', score: 95 },
-  { route: 'BLR-CHN', score: 83 }, { route: 'AMD-DEL', score: 90 },
-];
-
-/* ─── Heatmap cells ─── */
-const heatmapData = [
-  [3, 5, 2, 7, 4, 6],
-  [6, 8, 4, 3, 7, 5],
-  [2, 4, 9, 5, 3, 8],
-  [7, 3, 5, 8, 6, 2],
-  [4, 7, 3, 6, 9, 4],
-];
-const heatRows = ['North', 'West', 'South', 'East', 'Central'];
-const heatCols = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-
-const riskIndicators = [
-  { label: 'Weather Disruption', level: 'Medium', color: 'bg-yellow-400', pct: 45 },
-  { label: 'Route Congestion', level: 'High', color: 'bg-red-400', pct: 72 },
-  { label: 'Carrier Availability', level: 'Low', color: 'bg-green-400', pct: 18 },
-  { label: 'Fuel Price Volatility', level: 'Medium', color: 'bg-yellow-400', pct: 55 },
-];
+/* ─── Types for API data ─── */
+interface DashboardData {
+  demand: {
+    data: { name: string; demand: number; capacity: number }[];
+    current_demand: number;
+    current_capacity: number;
+    capacity_gap_pct: number;
+  };
+  routes: { route: string; score: number }[];
+  cost_index: { name: string; index: number }[];
+  heatmap: { rows: string[]; cols: string[]; data: number[][] };
+  risk: { label: string; level: string; color: string; pct: number }[];
+  timestamp: string;
+}
 
 const tabs = ['Demand', 'Routes', 'Cost Index', 'Risk'];
 
 export default function DashboardSection() {
   const [activeTab, setActiveTab] = useState('Demand');
+  const [data, setData] = useState<DashboardData | null>(null);
+  const [lastUpdate, setLastUpdate] = useState<string>('');
+
+  const fetchData = useCallback(async () => {
+    try {
+      const res = await fetch('/api/dashboard');
+      const json = await res.json();
+      setData(json);
+      setLastUpdate(new Date(json.timestamp).toLocaleTimeString());
+    } catch { /* silently retry on next interval */ }
+  }, []);
+
+  useEffect(() => {
+    fetchData();
+    const interval = setInterval(fetchData, 30000); // refresh every 30s
+    return () => clearInterval(interval);
+  }, [fetchData]);
+
+  // Fallback data while API loads
+  const demandData = data?.demand.data ?? [];
+  const routePerf = data?.routes ?? [];
+  const costIndex = data?.cost_index ?? [];
+  const heatRows = data?.heatmap.rows ?? [];
+  const heatCols = data?.heatmap.cols ?? [];
+  const heatmapData = data?.heatmap.data ?? [];
+  const riskIndicators = data?.risk ?? [];
 
   return (
     <section id="dashboard" className="section-padding section-alt">
@@ -80,9 +79,9 @@ export default function DashboardSection() {
                 {tab}
               </button>
             ))}
-            <div className="ml-auto flex items-center pr-4">
-              <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse mr-2" />
-              <span className="text-xs text-neutral-400">Live</span>
+            <div className="ml-auto flex items-center pr-4 gap-2">
+              <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
+              <span className="text-xs text-neutral-400">Live{lastUpdate ? ` · ${lastUpdate}` : ''}</span>
             </div>
           </div>
 
@@ -91,9 +90,9 @@ export default function DashboardSection() {
             {activeTab === 'Demand' && (
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }}>
                 <div className="flex flex-wrap gap-8 mb-6">
-                  <div><div className="text-2xl font-bold text-deep-blue">6,800</div><div className="text-xs text-neutral-400">Current Demand (loads)</div></div>
-                  <div><div className="text-2xl font-bold text-cyan">6,200</div><div className="text-xs text-neutral-400">Available Capacity</div></div>
-                  <div><div className="text-2xl font-bold text-red-400">9.7%</div><div className="text-xs text-neutral-400">Capacity Gap</div></div>
+                  <div><div className="text-2xl font-bold text-deep-blue">{data?.demand.current_demand?.toLocaleString() ?? '—'}</div><div className="text-xs text-neutral-400">Current Demand (loads)</div></div>
+                  <div><div className="text-2xl font-bold text-cyan">{data?.demand.current_capacity?.toLocaleString() ?? '—'}</div><div className="text-xs text-neutral-400">Available Capacity</div></div>
+                  <div><div className="text-2xl font-bold text-red-400">{data?.demand.capacity_gap_pct ?? '—'}%</div><div className="text-xs text-neutral-400">Capacity Gap</div></div>
                 </div>
                 <div className="h-64">
                   <ResponsiveContainer width="100%" height="100%">

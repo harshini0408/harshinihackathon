@@ -17,32 +17,8 @@ interface PredictionResult {
   estimatedDelay: string;
   factors: { name: string; impact: number }[];
   recommendation: string;
-}
-
-function predictDelay(route: string, weather: string, traffic: string): PredictionResult {
-  let base = 15;
-  const wi = weatherOptions.indexOf(weather);
-  const ti = trafficOptions.indexOf(traffic);
-  base += wi * 12 + ti * 15 + (routes.indexOf(route) % 3) * 5;
-  base = Math.min(base, 98);
-
-  const factors = [
-    { name: 'Weather Impact', impact: wi * 18 + 5 },
-    { name: 'Traffic Congestion', impact: ti * 22 + 8 },
-    { name: 'Historical Delays', impact: 10 + (routes.indexOf(route) % 4) * 8 },
-    { name: 'Route Distance', impact: 5 + (routes.indexOf(route) % 5) * 4 },
-  ].sort((a, b) => b.impact - a.impact);
-
-  const riskLevel: PredictionResult['riskLevel'] = base >= 75 ? 'Critical' : base >= 50 ? 'High' : base >= 30 ? 'Medium' : 'Low';
-  const estimatedDelay = base >= 75 ? '4-8 hours' : base >= 50 ? '2-4 hours' : base >= 30 ? '1-2 hours' : '<30 min';
-  const recommendations: Record<string, string> = {
-    Critical: 'Reroute shipment immediately. Consider alternative carriers or transport modes.',
-    High: 'Alert driver and receiver. Prepare backup delivery plan.',
-    Medium: 'Monitor route actively. Adjust ETA communication to receiver.',
-    Low: 'No action needed. Shipment expected to arrive on time.',
-  };
-
-  return { riskScore: base, riskLevel, estimatedDelay, factors, recommendation: recommendations[riskLevel] };
+  model?: string;
+  distance?: number;
 }
 
 export default function DelayPrediction() {
@@ -51,15 +27,35 @@ export default function DelayPrediction() {
   const [traffic, setTraffic] = useState('');
   const [result, setResult] = useState<PredictionResult | null>(null);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  const handlePredict = () => {
+  const handlePredict = async () => {
     if (!route || !weather || !traffic) return;
     setLoading(true);
     setResult(null);
-    setTimeout(() => {
-      setResult(predictDelay(route, weather, traffic));
+    setError('');
+    try {
+      const res = await fetch('/api/predict/delay', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ route, weather, traffic }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Prediction failed');
+      setResult({
+        riskScore: data.risk_score,
+        riskLevel: data.risk_level,
+        estimatedDelay: data.estimated_delay,
+        factors: data.factors,
+        recommendation: data.recommendation,
+        model: data.model,
+        distance: data.route_distance_km,
+      });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to get prediction');
+    } finally {
       setLoading(false);
-    }, 1500);
+    }
   };
 
   const riskColor = (level: string) =>
@@ -105,13 +101,16 @@ export default function DelayPrediction() {
           </div>
 
           <button onClick={handlePredict} disabled={!route || !weather || !traffic || loading} className="btn-primary w-full !py-3 disabled:opacity-40">
-            {loading ? 'Analyzing route...' : 'Predict Delay Risk'}
+            {loading ? 'AI Model analyzing...' : 'Predict Delay Risk'}
           </button>
+
+          {error && <div className="mt-4 p-3 bg-red-50 text-red-600 text-sm rounded-lg">{error}</div>}
 
           {result && (
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mt-8 space-y-6">
               {/* Risk gauge */}
               <div className="text-center p-6 bg-soft-grey rounded-xl">
+                {result.model && <div className="inline-block px-2 py-0.5 bg-cyan/10 text-cyan text-[10px] font-semibold rounded-full mb-2">{result.model}{result.distance ? ` · ${result.distance} km` : ''}</div>}
                 <div className="relative w-28 h-28 mx-auto mb-3">
                   <svg viewBox="0 0 100 100" className="w-full h-full -rotate-90">
                     <circle cx="50" cy="50" r="40" stroke="#E2E8F0" strokeWidth="10" fill="none" />

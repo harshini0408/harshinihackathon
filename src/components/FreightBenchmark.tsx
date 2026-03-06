@@ -14,23 +14,8 @@ interface BenchmarkResult {
   carriers: number;
   trend: 'up' | 'down' | 'stable';
   trendPct: number;
-}
-
-function calculateBenchmark(origin: string, dest: string, truck: string): BenchmarkResult {
-  const oi = origins.indexOf(origin);
-  const di = origins.indexOf(dest);
-  const ti = truckTypes.indexOf(truck);
-  const base = 15000 + Math.abs(oi - di) * 8000 + ti * 3000;
-  const variance = base * 0.15;
-  return {
-    rate: Math.round(base),
-    marketAvg: Math.round(base * 1.08),
-    low: Math.round(base - variance),
-    high: Math.round(base + variance * 1.3),
-    carriers: 8 + ((oi + di) % 12),
-    trend: ti % 3 === 0 ? 'up' : ti % 3 === 1 ? 'down' : 'stable',
-    trendPct: 2 + (oi % 5),
-  };
+  distance?: number;
+  model?: string;
 }
 
 export default function FreightBenchmark() {
@@ -39,14 +24,37 @@ export default function FreightBenchmark() {
   const [truck, setTruck] = useState('');
   const [result, setResult] = useState<BenchmarkResult | null>(null);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  const handleExplore = () => {
+  const handleExplore = async () => {
     if (!origin || !dest || !truck || origin === dest) return;
     setLoading(true);
-    setTimeout(() => {
-      setResult(calculateBenchmark(origin, dest, truck));
+    setError('');
+    setResult(null);
+    try {
+      const res = await fetch('/api/predict/freight-rate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ origin, destination: dest, truckType: truck }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Prediction failed');
+      setResult({
+        rate: data.predicted_rate,
+        marketAvg: data.market_avg,
+        low: data.low,
+        high: data.high,
+        carriers: data.carriers,
+        trend: data.trend,
+        trendPct: data.trend_pct,
+        distance: data.distance_km,
+        model: data.model,
+      });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to get prediction');
+    } finally {
       setLoading(false);
-    }, 1200);
+    }
   };
 
   return (
@@ -85,17 +93,20 @@ export default function FreightBenchmark() {
           </div>
 
           <button onClick={handleExplore} disabled={!origin || !dest || !truck || origin === dest || loading} className="btn-primary w-full !py-3 disabled:opacity-40">
-            {loading ? 'Fetching rates...' : 'Get Benchmark Rate'}
+            {loading ? 'AI Model predicting...' : 'Get Benchmark Rate'}
           </button>
+
+          {error && <div className="mt-4 p-3 bg-red-50 text-red-600 text-sm rounded-lg">{error}</div>}
 
           {/* Results */}
           {result && !loading && (
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mt-8 space-y-6">
               {/* Rate card */}
               <div className="text-center p-6 bg-soft-grey rounded-xl">
-                <div className="text-xs text-neutral-400 uppercase tracking-wider mb-1">Benchmark Rate</div>
+                {result.model && <div className="inline-block px-2 py-0.5 bg-cyan/10 text-cyan text-[10px] font-semibold rounded-full mb-2">{result.model}</div>}
+                <div className="text-xs text-neutral-400 uppercase tracking-wider mb-1">AI-Predicted Benchmark Rate</div>
                 <div className="text-4xl font-bold text-deep-blue">₹{result.rate.toLocaleString()}</div>
-                <div className="text-sm text-neutral-500 mt-1">{origin} → {dest} · {truck}</div>
+                <div className="text-sm text-neutral-500 mt-1">{origin} → {dest} · {truck}{result.distance ? ` · ${result.distance} km` : ''}</div>
               </div>
 
               {/* Range bar */}

@@ -3,34 +3,20 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-type Message = { role: 'user' | 'assistant'; text: string };
+type Message = { role: 'user' | 'assistant'; text: string; model?: string };
 
 const quickPrompts = [
-  'What is LoRRI?',
+  'What is LogisticsNow?',
+  'Freight rate from Delhi to Mumbai',
   'How does AI reduce logistics costs?',
-  'Show me ROI estimates',
   'Schedule a demo',
 ];
-
-const responses: Record<string, string> = {
-  'what is lorri':
-    'LoRRI is an AI-powered logistics intelligence platform. We help enterprises reduce freight costs by 12-18%, predict delays with 94% accuracy, and optimize routes across India\'s transport network. Think of us as the AI brain for your logistics operations.',
-  'how does ai reduce logistics costs':
-    'Our AI reduces costs through three channels:\n\n1. **Freight benchmarking** — compares your rates against 15,000+ market lanes\n2. **Route optimization** — finds the fastest, cheapest routes in real-time\n3. **Load consolidation** — increases truck utilization by 34%\n\nMost clients see ROI within the first quarter.',
-  'show me roi estimates':
-    'For a mid-size shipper with 1,000+ monthly shipments, typical annual savings range from ₹1.5–4 Cr depending on industry. Try our ROI tools above — the Maturity Assessment and Freight Benchmark Explorer give personalized estimates.',
-  'schedule a demo':
-    'I\'d love to help! You can fill out the demo form in the Contact section below, or email us at hello@lorri.ai. Our team typically responds within 4 hours.',
-  'what industries do you serve':
-    'We serve Manufacturing, FMCG, Retail & E-Commerce, and Logistics Providers. Each solution is purpose-built for industry-specific challenges like JIT delivery, cold-chain, or hazmat routing.',
-  'how accurate are predictions':
-    'Our delay prediction model achieves 94.2% accuracy, trained on 3+ years of historical route data, real-time weather, and traffic feeds. The freight rate model benchmarks against 15,000+ active lanes across India.',
-};
 
 export default function AIAssistant() {
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
+  const [isTyping, setIsTyping] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -43,22 +29,34 @@ export default function AIAssistant() {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
   }, [messages]);
 
-  const send = (text: string) => {
+  const send = async (text: string) => {
     const userMsg: Message = { role: 'user', text };
     setMessages((prev) => [...prev, userMsg]);
     setInput('');
+    setIsTyping(true);
 
-    setTimeout(() => {
-      const key = text.toLowerCase().replace(/[?!.,]/g, '').trim();
-      const reply = Object.entries(responses).find(([k]) => key.includes(k))?.[1]
-        || 'Thanks for your question! I can help with LoRRI\'s platform, AI capabilities, pricing, or scheduling a demo. Try asking about how AI reduces costs, our prediction accuracy, or which industries we serve.';
-      setMessages((prev) => [...prev, { role: 'assistant', text: reply }]);
-    }, 600);
+    try {
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: text }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Chat failed');
+      setMessages((prev) => [...prev, { role: 'assistant', text: data.reply, model: data.model }]);
+    } catch {
+      setMessages((prev) => [...prev, {
+        role: 'assistant',
+        text: 'Sorry, I encountered an issue. Please try again or contact us at connect@logisticsnow.in',
+      }]);
+    } finally {
+      setIsTyping(false);
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!input.trim()) return;
+    if (!input.trim() || isTyping) return;
     send(input.trim());
   };
 
@@ -101,8 +99,8 @@ export default function AIAssistant() {
                   </svg>
                 </div>
                 <div>
-                  <div className="text-sm font-semibold">LoRRI AI Assistant</div>
-                  <div className="text-[11px] text-neutral-300">Ask anything about logistics</div>
+                  <div className="text-sm font-semibold">LogisticsNow AI Assistant</div>
+                  <div className="text-[11px] text-neutral-300">Powered by ML · Ask anything about logistics</div>
                 </div>
               </div>
               <button onClick={() => setOpen(false)} className="p-1.5 hover:bg-white/10 rounded-lg transition-colors" aria-label="Close">
@@ -116,7 +114,7 @@ export default function AIAssistant() {
             <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-3 hide-scrollbar">
               {messages.length === 0 && (
                 <div className="py-4">
-                  <p className="text-sm text-neutral-500 mb-4">Hi! I can help you understand LoRRI, explore our AI capabilities, or schedule a demo.</p>
+                  <p className="text-sm text-neutral-500 mb-4">Hi! I&apos;m the LogisticsNow AI Assistant. I can help you with freight rates, delay prediction, logistics maturity, and more — powered by real ML models.</p>
                   <div className="space-y-2">
                     {quickPrompts.map((prompt) => (
                       <button
@@ -139,9 +137,24 @@ export default function AIAssistant() {
                       : 'bg-soft-grey text-deep-blue rounded-bl-md'
                   }`}>
                     {msg.text}
+                    {msg.model && msg.role === 'assistant' && (
+                      <div className="mt-1 text-[10px] text-neutral-400">{msg.model}</div>
+                    )}
                   </div>
                 </div>
               ))}
+
+              {isTyping && (
+                <div className="flex justify-start">
+                  <div className="bg-soft-grey rounded-xl rounded-bl-md px-4 py-3">
+                    <div className="flex gap-1">
+                      <span className="w-2 h-2 bg-neutral-300 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                      <span className="w-2 h-2 bg-neutral-300 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                      <span className="w-2 h-2 bg-neutral-300 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Input */}
@@ -150,12 +163,12 @@ export default function AIAssistant() {
                 <input
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
-                  placeholder="Ask about LoRRI..."
+                  placeholder="Ask about freight rates, delays..."
                   className="flex-1 px-3.5 py-2.5 text-sm border border-neutral-200 rounded-lg bg-white text-deep-blue placeholder-neutral-400 focus:ring-2 focus:ring-cyan/20 focus:border-cyan outline-none"
                 />
                 <button
                   type="submit"
-                  disabled={!input.trim()}
+                  disabled={!input.trim() || isTyping}
                   className="px-3.5 py-2.5 bg-cyan text-white rounded-lg hover:bg-cyan-hover disabled:opacity-40 transition-all"
                   aria-label="Send"
                 >
