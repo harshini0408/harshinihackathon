@@ -5,12 +5,13 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 
 const navLinks = [
-  { label: 'Platform', href: '/platform' },
-  { label: 'AI Technology', href: '/ai-technology' },
+  { label: 'About', href: '/about' },
+  { label: 'Products', href: '/products' },
   { label: 'Solutions', href: '/solutions' },
   { label: 'Customers', href: '/customers' },
-  { label: 'Insights', href: '/insights' },
+  { label: 'Investors', href: '/investors' },
   { label: 'Careers', href: '/careers' },
+  { label: 'News', href: '/news' },
 ];
 
 export default function Navbar() {
@@ -35,8 +36,8 @@ export default function Navbar() {
               <circle cx="8" cy="8" r="2" fill="white"/>
             </svg>
           </div>
-          <span className="text-lg font-bold text-deep-blue tracking-tight">LoRRI</span>
-          <span className="text-[10px] font-semibold text-cyan bg-cyan-light px-1.5 py-0.5 rounded-md uppercase tracking-wider">AI</span>
+          <span className="text-lg font-bold text-deep-blue tracking-tight">Logistics</span>
+          <span className="text-lg font-bold text-cyan tracking-tight">Now</span>
         </Link>
 
         <div className="hidden lg:flex items-center gap-8">

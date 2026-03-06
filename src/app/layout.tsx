@@ -9,20 +9,20 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "LoRRI AI | Intelligence Platform for Modern Logistics",
-  description: "LoRRI transforms logistics decisions using predictive AI and real-time freight intelligence. Reduce costs, predict delays, optimize routes.",
-  keywords: "LoRRI AI, Logistics Intelligence, Freight AI, Supply Chain Optimization, Predictive Logistics",
+  title: "LogisticsNow | AI-Powered National Logistics Intelligence Platform",
+  description: "LogisticsNow is building the Digital Backbone of Logistics with LoRRI — AI-powered intelligence, freight benchmarking, and optimization for India's logistics networks.",
+  keywords: "LogisticsNow, LoRRI, Logistics Intelligence, National Logistics Grid, Freight AI, Supply Chain Optimization, Freight Benchmarking",
   openGraph: {
-    title: "LoRRI AI | Intelligence Platform for Modern Logistics",
-    description: "Predictive AI and real-time freight intelligence for modern logistics networks.",
+    title: "LogisticsNow | AI-Powered National Logistics Intelligence Platform",
+    description: "Building the Digital Backbone of Logistics with AI-powered intelligence and optimization.",
     type: "website",
-    url: "https://lorri.ai",
-    siteName: "LoRRI AI",
+    url: "https://logisticsnow.in",
+    siteName: "LogisticsNow",
   },
   twitter: {
     card: "summary_large_image",
-    title: "LoRRI AI | Intelligence Platform for Modern Logistics",
-    description: "Predictive AI and real-time freight intelligence for modern logistics networks.",
+    title: "LogisticsNow | National Logistics Intelligence Platform",
+    description: "Building the Digital Backbone of Logistics with AI-powered intelligence and optimization.",
   },
   robots: { index: true, follow: true },
 };

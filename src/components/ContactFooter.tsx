@@ -33,20 +33,20 @@ export default function ContactFooter() {
                   <svg className="w-5 h-5 text-cyan flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
                   </svg>
-                  hello@lorri.ai
+                  connect@logisticsnow.in
                 </div>
                 <div className="flex items-center gap-3 text-sm text-neutral-600">
                   <svg className="w-5 h-5 text-cyan flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
                     <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
                   </svg>
-                  Bengaluru, India
+                  409, Neptune&apos;s Flying Colors, Mulund West, Mumbai 400080
                 </div>
                 <div className="flex items-center gap-3 text-sm text-neutral-600">
                   <svg className="w-5 h-5 text-cyan flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />
                   </svg>
-                  +91 80 4567 8900
+                  +91-9867773508 / +91-9653620207
                 </div>
               </div>
             </div>
@@ -119,22 +119,22 @@ export default function ContactFooter() {
                     <circle cx="8" cy="8" r="2" fill="#0A2540"/>
                   </svg>
                 </div>
-                <span className="text-base font-bold">LoRRI AI</span>
+                <span className="text-base font-bold">LogisticsNow</span>
               </div>
               <p className="text-sm text-neutral-400 leading-relaxed">
-                AI intelligence platform for modern logistics networks. Built in India.
+                Building the Digital Backbone of Logistics. AI-powered intelligence for India&apos;s logistics networks.
               </p>
             </div>
 
-            {/* Platform */}
+            {/* Products */}
             <div>
-              <h4 className="text-xs font-semibold uppercase tracking-wider text-neutral-400 mb-4">Platform</h4>
+              <h4 className="text-xs font-semibold uppercase tracking-wider text-neutral-400 mb-4">Products</h4>
               <ul className="space-y-2.5">
+                <li><Link href="/products" className="text-sm text-neutral-400 hover:text-white transition-colors">LoRRI Platform</Link></li>
                 <li><Link href="/ai-technology" className="text-sm text-neutral-400 hover:text-white transition-colors">AI Technology</Link></li>
-                <li><Link href="/platform" className="text-sm text-neutral-400 hover:text-white transition-colors">Data Platform</Link></li>
-                <li><Link href="/platform" className="text-sm text-neutral-400 hover:text-white transition-colors">Route Optimization</Link></li>
-                <li><Link href="/ai-technology" className="text-sm text-neutral-400 hover:text-white transition-colors">Freight Benchmarking</Link></li>
-                <li><Link href="/ai-technology" className="text-sm text-neutral-400 hover:text-white transition-colors">Delay Prediction</Link></li>
+                <li><Link href="/platform" className="text-sm text-neutral-400 hover:text-white transition-colors">Freight Benchmarking</Link></li>
+                <li><Link href="/ai-technology" className="text-sm text-neutral-400 hover:text-white transition-colors">Route Optimization</Link></li>
+                <li><Link href="/platform" className="text-sm text-neutral-400 hover:text-white transition-colors">Logistics Intelligence</Link></li>
               </ul>
             </div>
 
@@ -142,11 +142,11 @@ export default function ContactFooter() {
             <div>
               <h4 className="text-xs font-semibold uppercase tracking-wider text-neutral-400 mb-4">Company</h4>
               <ul className="space-y-2.5">
-                <li><Link href="/" className="text-sm text-neutral-400 hover:text-white transition-colors">About</Link></li>
+                <li><Link href="/about" className="text-sm text-neutral-400 hover:text-white transition-colors">About Us</Link></li>
                 <li><Link href="/customers" className="text-sm text-neutral-400 hover:text-white transition-colors">Customers</Link></li>
+                <li><Link href="/investors" className="text-sm text-neutral-400 hover:text-white transition-colors">Investors</Link></li>
                 <li><Link href="/careers" className="text-sm text-neutral-400 hover:text-white transition-colors">Careers</Link></li>
-                <li><Link href="/insights" className="text-sm text-neutral-400 hover:text-white transition-colors">Blog</Link></li>
-                <li><a href="#contact" className="text-sm text-neutral-400 hover:text-white transition-colors">Contact</a></li>
+                <li><Link href="/news" className="text-sm text-neutral-400 hover:text-white transition-colors">News & Events</Link></li>
               </ul>
             </div>
 
@@ -154,17 +154,17 @@ export default function ContactFooter() {
             <div>
               <h4 className="text-xs font-semibold uppercase tracking-wider text-neutral-400 mb-4">Resources</h4>
               <ul className="space-y-2.5">
-                <li><Link href="/insights" className="text-sm text-neutral-400 hover:text-white transition-colors">Documentation</Link></li>
-                <li><Link href="/platform" className="text-sm text-neutral-400 hover:text-white transition-colors">API Reference</Link></li>
-                <li><a href="#" className="text-sm text-neutral-400 hover:text-white transition-colors">System Status</a></li>
+                <li><Link href="/solutions" className="text-sm text-neutral-400 hover:text-white transition-colors">Solutions</Link></li>
+                <li><a href="https://www.lorri.in/" target="_blank" rel="noopener noreferrer" className="text-sm text-neutral-400 hover:text-white transition-colors">LoRRI for Shippers</a></li>
+                <li><a href="https://transporter.lorri.in/" target="_blank" rel="noopener noreferrer" className="text-sm text-neutral-400 hover:text-white transition-colors">LoRRI for Carriers</a></li>
                 <li><a href="#" className="text-sm text-neutral-400 hover:text-white transition-colors">Privacy Policy</a></li>
-                <li><a href="#" className="text-sm text-neutral-400 hover:text-white transition-colors">Terms</a></li>
+                <li><a href="#" className="text-sm text-neutral-400 hover:text-white transition-colors">Terms of Use</a></li>
               </ul>
             </div>
           </div>
 
           <div className="mt-12 pt-8 border-t border-white/10 flex flex-col sm:flex-row justify-between items-center gap-4">
-            <p className="text-xs text-neutral-500">© 2026 LoRRI AI. All rights reserved.</p>
+            <p className="text-xs text-neutral-500">© 2026 LogisticsNow. All rights reserved.</p>
             <div className="flex gap-4">
               {['Twitter', 'LinkedIn', 'GitHub'].map((s) => (
                 <a key={s} href="#" className="text-xs text-neutral-500 hover:text-white transition-colors">{s}</a>

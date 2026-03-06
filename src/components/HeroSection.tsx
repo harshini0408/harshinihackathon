@@ -122,33 +122,33 @@ export default function HeroSection() {
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
             <div className="badge mb-6">
               <span className="w-1.5 h-1.5 rounded-full bg-cyan" />
-              Trusted by 120+ enterprises
+              Building the National Logistics Intelligence Grid
             </div>
 
             <h1 className="text-[32px] md:text-[40px] lg:text-hero text-deep-blue mb-5 max-w-[540px] leading-[1.1] font-bold tracking-tight">
-              AI Intelligence for Modern Logistics Networks
+              The Digital Backbone of India&apos;s Logistics
             </h1>
 
             <p className="text-base md:text-lg text-neutral-500 mb-8 max-w-[480px] leading-relaxed">
-              LoRRI transforms logistics decisions using predictive AI and real-time freight intelligence. Reduce costs by 18%, predict delays before they happen.
+              LogisticsNow uses the power of AI and Data Science to organize the logistics industry — optimizing operations, driving transparency, and delivering multi-million dollar savings.
             </p>
 
             <div className="flex flex-wrap gap-3 mb-12">
               <a href="#contact" className="btn-primary">
-                Request Demo
+                Schedule a Demo
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
                 </svg>
               </a>
-              <Link href="/platform" className="btn-secondary">Explore Platform</Link>
+              <Link href="/products" className="btn-secondary">Explore LoRRI Platform</Link>
             </div>
 
             {/* Metrics strip */}
             <div className="grid grid-cols-3 gap-6">
               {[
-                { value: 18, suffix: '%', label: 'Cost Reduction' },
-                { value: 340, suffix: '+', label: 'Routes Optimized' },
-                { value: 99.2, suffix: '%', label: 'Uptime SLA' },
+                { value: 80000, suffix: '+', label: 'Routes Mapped' },
+                { value: 2200, suffix: '+', label: 'Carriers Added' },
+                { value: 2.5, suffix: 'B+', label: 'Spend Analysed (₹)' },
               ].map((m) => (
                 <div key={m.label}>
                   <div className="text-2xl md:text-3xl font-bold text-deep-blue tracking-tight">
