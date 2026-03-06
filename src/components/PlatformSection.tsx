@@ -9,6 +9,7 @@ const layers = [
     items: ['Real-time GPS tracking', 'ERP & TMS integration', 'Market price feeds', 'Weather & traffic APIs'],
     color: 'bg-neutral-100',
     accent: 'text-neutral-600',
+    metric: '2.4M data points/day',
   },
   {
     title: 'AI Intelligence Layer',
@@ -16,6 +17,7 @@ const layers = [
     items: ['Freight rate prediction', 'Delay forecasting', 'Demand sensing', 'Anomaly detection'],
     color: 'bg-cyan-light',
     accent: 'text-cyan',
+    metric: '94.2% prediction accuracy',
   },
   {
     title: 'Optimization Engine',
@@ -23,6 +25,7 @@ const layers = [
     items: ['Route optimization', 'Load consolidation', 'Carrier matching', 'Cost minimization'],
     color: 'bg-cyan-50',
     accent: 'text-cyan-hover',
+    metric: '18% avg cost reduction',
   },
   {
     title: 'Decision Intelligence',
@@ -30,12 +33,13 @@ const layers = [
     items: ['Automated alerts', 'Approval workflows', 'Performance dashboards', 'Executive reports'],
     color: 'bg-deep-blue-50',
     accent: 'text-deep-blue',
+    metric: '3x faster decisions',
   },
 ];
 
 const fadeUp = {
   hidden: { opacity: 0, y: 20 },
-  visible: (i: number) => ({ opacity: 1, y: 0, transition: { delay: i * 0.1, duration: 0.5 } }),
+  visible: (i: number) => ({ opacity: 1, y: 0, transition: { delay: i * 0.12, duration: 0.5 } }),
 };
 
 export default function PlatformSection() {
@@ -65,6 +69,7 @@ export default function PlatformSection() {
                   <div className="flex items-center gap-3 mb-2">
                     <span className={`text-xs font-bold uppercase tracking-wider ${layer.accent}`}>Layer {i + 1}</span>
                     <div className="h-px flex-1 bg-neutral-200/60" />
+                    <span className="text-xs font-semibold text-deep-blue bg-white/80 px-2 py-0.5 rounded-full">{layer.metric}</span>
                   </div>
                   <h3 className="text-lg font-semibold text-deep-blue mb-1">{layer.title}</h3>
                   <p className="text-sm text-neutral-500">{layer.desc}</p>
@@ -72,7 +77,9 @@ export default function PlatformSection() {
                 <div className="grid grid-cols-2 gap-2 md:w-[280px] flex-shrink-0">
                   {layer.items.map((item) => (
                     <div key={item} className="flex items-center gap-2 text-sm text-neutral-600">
-                      <span className="w-1 h-1 rounded-full bg-cyan flex-shrink-0" />
+                      <svg className="w-3.5 h-3.5 text-cyan flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                      </svg>
                       {item}
                     </div>
                   ))}

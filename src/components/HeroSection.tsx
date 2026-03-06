@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
-import Link from 'next/link';
 
 /* ─── Animated counter ─── */
 function Counter({ end, suffix = '', prefix = '' }: { end: number; suffix?: string; prefix?: string }) {
@@ -109,38 +108,80 @@ function IndiaMap() {
 /* ─── Logos ─── */
 const logos = ['Tata Motors', 'Reliance', 'Flipkart', 'Hindustan Unilever', 'Marico', 'Delhivery', 'Blue Dart', 'Asian Paints'];
 
+/* ─── Live AI stat ticker ─── */
+function LiveTicker() {
+  const stats = [
+    { text: 'Delhi → Mumbai: ₹28,400 predicted', type: 'prediction' },
+    { text: 'Route BLR-HYD: Low delay risk', type: 'low-risk' },
+    { text: 'Carrier match: 42 available DEL-MUM', type: 'match' },
+    { text: 'Route optimization saved ₹3.2L today', type: 'savings' },
+    { text: 'AI processed 12,847 predictions today', type: 'prediction' },
+  ];
+  const [idx, setIdx] = useState(0);
+
+  useEffect(() => {
+    const id = setInterval(() => setIdx((i) => (i + 1) % stats.length), 3000);
+    return () => clearInterval(id);
+  }, [stats.length]);
+
+  return (
+    <div className="flex items-center gap-2 px-3 py-2 bg-deep-blue/5 rounded-lg">
+      <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse flex-shrink-0" />
+      <motion.span
+        key={idx}
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -8 }}
+        className="text-xs font-medium text-deep-blue truncate"
+      >
+        {stats[idx].text}
+      </motion.span>
+    </div>
+  );
+}
+
 /* ─── Main Hero ─── */
 export default function HeroSection() {
   return (
     <section className="relative pt-28 pb-16 md:pt-36 md:pb-24 overflow-hidden">
       {/* Subtle dot grid background */}
       <div className="absolute inset-0 dot-grid opacity-40 pointer-events-none" />
+      {/* Gradient sweep */}
+      <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-gradient-to-bl from-cyan/5 via-transparent to-transparent pointer-events-none" />
 
       <div className="max-w-content mx-auto px-5 md:px-8">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           {/* Left — copy */}
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-            <div className="badge mb-6">
-              <span className="w-1.5 h-1.5 rounded-full bg-cyan" />
-              Building the National Logistics Intelligence Grid
+            <div className="badge mb-4">
+              <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+              AI-Powered Logistics Intelligence
             </div>
 
-            <h1 className="text-[32px] md:text-[40px] lg:text-hero text-deep-blue mb-5 max-w-[540px] leading-[1.1] font-bold tracking-tight">
-              The Digital Backbone of India&apos;s Logistics
+            <h1 className="text-[32px] md:text-[44px] lg:text-hero text-deep-blue mb-5 max-w-[560px] leading-[1.08] font-bold tracking-tight">
+              Don&apos;t Just Read About AI.
+              <br />
+              <span className="text-cyan">Experience It Live.</span>
             </h1>
 
-            <p className="text-base md:text-lg text-neutral-500 mb-8 max-w-[480px] leading-relaxed">
-              LogisticsNow uses the power of AI and Data Science to organize the logistics industry — optimizing operations, driving transparency, and delivering multi-million dollar savings.
+            <p className="text-base md:text-lg text-neutral-500 mb-6 max-w-[500px] leading-relaxed">
+              LogisticsNow is building India&apos;s National Logistics Intelligence Grid — predict freight rates, detect delays, optimize routes, and make AI-driven decisions in real-time.
             </p>
 
-            <div className="flex flex-wrap gap-3 mb-12">
-              <a href="#contact" className="btn-primary">
-                Schedule a Demo
+            {/* Live AI ticker */}
+            <div className="mb-6">
+              <LiveTicker />
+            </div>
+
+            <div className="flex flex-wrap gap-3 mb-10">
+              <a href="#benchmark" className="btn-primary">
+                Try AI Prediction Live
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
                 </svg>
               </a>
-              <Link href="/products" className="btn-secondary">Explore LoRRI Platform</Link>
+              <a href="#simulator" className="btn-secondary">Simulate a Route</a>
+              <a href="#contact" className="btn-ghost">Schedule Demo →</a>
             </div>
 
             {/* Metrics strip */}
@@ -160,7 +201,7 @@ export default function HeroSection() {
             </div>
           </motion.div>
 
-          {/* Right — India map */}
+          {/* Right — India map + floating intelligence cards */}
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -169,14 +210,22 @@ export default function HeroSection() {
           >
             <div className="relative w-full max-w-[420px] mx-auto">
               <IndiaMap />
-              {/* Floating label cards */}
-              <div className="absolute top-8 right-0 bg-white rounded-lg shadow-md border border-neutral-100 px-3 py-2 animate-float">
+              {/* Floating intelligence cards */}
+              <div className="absolute top-4 right-0 bg-white rounded-lg shadow-md border border-neutral-100 px-3 py-2 animate-float">
                 <div className="text-[10px] text-neutral-400">Live Routes</div>
-                <div className="text-sm font-bold text-deep-blue">2,847</div>
+                <div className="text-sm font-bold text-deep-blue flex items-center gap-1">2,847 <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" /></div>
               </div>
-              <div className="absolute bottom-24 left-0 bg-white rounded-lg shadow-md border border-neutral-100 px-3 py-2 animate-float" style={{ animationDelay: '2s' }}>
-                <div className="text-[10px] text-neutral-400">AI Predictions</div>
+              <div className="absolute top-1/3 right-0 bg-white rounded-lg shadow-md border border-green-100 px-3 py-2 animate-float" style={{ animationDelay: '1s' }}>
+                <div className="text-[10px] text-green-600 font-medium">AI Savings</div>
+                <div className="text-sm font-bold text-green-700">₹3.2Cr<span className="text-[10px] text-green-400">/mo</span></div>
+              </div>
+              <div className="absolute bottom-28 left-0 bg-white rounded-lg shadow-md border border-cyan/20 px-3 py-2 animate-float" style={{ animationDelay: '2s' }}>
+                <div className="text-[10px] text-neutral-400">ML Predictions</div>
                 <div className="text-sm font-bold text-cyan">12.4K<span className="text-[10px] text-neutral-400">/day</span></div>
+              </div>
+              <div className="absolute bottom-12 right-4 bg-deep-blue rounded-lg shadow-md px-3 py-2 animate-float" style={{ animationDelay: '3s' }}>
+                <div className="text-[10px] text-neutral-300">Delay Risk</div>
+                <div className="text-sm font-bold text-green-400">Low ✓</div>
               </div>
             </div>
           </motion.div>

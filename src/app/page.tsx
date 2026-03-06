@@ -7,7 +7,12 @@ import SolutionsSection from '@/components/SolutionsSection';
 import CustomersSection from '@/components/CustomersSection';
 import ContactFooter from '@/components/ContactFooter';
 
-// Lazy-loaded heavy interactive components
+// Interactive & visual components — lazy loaded
+const AIDataFlow = dynamic(() => import('@/components/AIDataFlow'), { ssr: false });
+const ProductPreview = dynamic(() => import('@/components/ProductPreview'), { ssr: false });
+const NationalGrid = dynamic(() => import('@/components/NationalGrid'), { ssr: false });
+const RouteSimulator = dynamic(() => import('@/components/RouteSimulator'), { ssr: false });
+const EnterpriseSection = dynamic(() => import('@/components/EnterpriseSection'));
 const DashboardSection = dynamic(() => import('@/components/DashboardSection'), { ssr: false });
 const MaturityAssessment = dynamic(() => import('@/components/MaturityAssessment'), { ssr: false });
 const FreightBenchmark = dynamic(() => import('@/components/FreightBenchmark'), { ssr: false });
@@ -22,14 +27,19 @@ export default function Home() {
     <main className="relative min-h-screen bg-white">
       <Navbar />
       <HeroSection />
+      <AIDataFlow />
       <PlatformSection />
       <AITechnologySection />
+      <ProductPreview />
+      <NationalGrid />
       <SolutionsSection />
       <DashboardSection />
+      <RouteSimulator />
       <CustomersSection />
-      <MaturityAssessment />
       <FreightBenchmark />
       <DelayPrediction />
+      <MaturityAssessment />
+      <EnterpriseSection />
       <InsightsSection />
       <CareersSection />
       <ContactFooter />
