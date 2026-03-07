@@ -80,30 +80,46 @@ export default function RouteSimulator() {
     if (!origin || !destination || origin === destination) return;
     setAnimating(true);
     setResult(null);
+    const fallback = simulateRoute(origin, destination);
     try {
       const res = await fetch('/api/predict/freight', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ origin, destination, truckType: 'open_body', weight: 10 }),
+        // Use a truck type supported by the freight API route.
+        body: JSON.stringify({ origin, destination, truckType: '22ft Open', weight: 9000 }),
       });
       const data = await res.json();
-      const distance = data.delivery?.distance_km ?? 0;
+      if (!res.ok) throw new Error(data?.error || 'Freight prediction failed');
+
+      const distance = Number(data.delivery?.distance_km);
+      const baseRate = Number(data.optimization?.market_rate);
+      const optimizedRate = Number(data.optimization?.ai_optimized_rate);
+      const transit = Number(data.delivery?.estimated_hours);
+      const savings = Number(data.optimization?.savings_pct);
       const waypoints = getWaypoints(origin, destination);
-      const co2 = Math.round(distance * 0.12);
+
+      // Guard against partial or malformed API values to avoid rendering zeros.
+      const safeDistance = Number.isFinite(distance) && distance > 0 ? Math.round(distance) : fallback.distance;
+      const safeBaseRate = Number.isFinite(baseRate) && baseRate > 0 ? Math.round(baseRate) : fallback.baseRate;
+      const safeOptimizedRate = Number.isFinite(optimizedRate) && optimizedRate > 0 ? Math.round(optimizedRate) : fallback.optimizedRate;
+      const safeTransit = Number.isFinite(transit) && transit > 0 ? Math.round(transit) : fallback.transit;
+      const safeSavings = Number.isFinite(savings) && savings > 0 ? Math.round(savings) : fallback.savings;
+      const co2 = Math.round(safeDistance * 0.12);
+
       setResult({
-        distance,
-        baseRate: Math.round(data.optimization?.market_rate ?? 0),
-        optimizedRate: Math.round(data.optimization?.ai_optimized_rate ?? 0),
-        transit: Math.round(data.delivery?.estimated_hours ?? 0),
+        distance: safeDistance,
+        baseRate: safeBaseRate,
+        optimizedRate: safeOptimizedRate,
+        transit: safeTransit,
         co2,
         co2Saved: Math.round(co2 * 0.15),
         waypoints,
-        savings: Math.round(data.optimization?.savings_pct ?? 0),
-        fuelCost: Math.round(distance * 3.8),
-        tollCost: Math.round(distance * 1.2),
+        savings: safeSavings,
+        fuelCost: Math.round(safeDistance * 3.8),
+        tollCost: Math.round(safeDistance * 1.2),
       });
     } catch {
-      setResult(simulateRoute(origin, destination));
+      setResult(fallback);
     } finally {
       setAnimating(false);
     }
