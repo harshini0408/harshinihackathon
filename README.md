@@ -371,25 +371,6 @@ Score logistics maturity and get improvement suggestions.
 | `GET` | `/api/dashboard` | Real-time dashboard data |
 
 ---
-
-## Environment Variables
-
-### Frontend (`.env.local`)
-
-```env
-GEMINI_API_KEY=your_google_gemini_api_key    # Optional — enables AI chat via Gemini
-```
-
-### Auth Backend (`.env`)
-
-```env
-MONGO_URI=mongodb+srv://user:pass@cluster.mongodb.net/logisticsnow
-JWT_SECRET=your_jwt_secret_key
-PORT=5000
-```
-
----
-
 ## Deployment
 
 The application is deployed on **Render**:
