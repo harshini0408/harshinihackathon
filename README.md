@@ -235,7 +235,7 @@ npm install
 npm run dev
 ```
 
-The frontend runs at **http://localhost:3000**.
+The frontend runs at **https://alpha-hackers.vercel.app/**.
 
 ### 2. AI/ML Backend (FastAPI)
 
@@ -256,7 +256,7 @@ pip install -r requirements.txt
 uvicorn main:app --reload --port 8000
 ```
 
-The AI/ML API runs at **http://localhost:8000**.
+The AI/ML API runs at **https://alpha-hackers-1-4hsj.onrender.com/health**.
 
 **Available endpoints:**
 - `GET /health` — Health check
@@ -280,7 +280,7 @@ npm install
 npm run dev
 ```
 
-The auth API runs at **http://localhost:5000**.
+The auth API runs at **https://alpha-hackers-33g1.onrender.com**.
 
 ---
 
