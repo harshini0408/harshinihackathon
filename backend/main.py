@@ -13,7 +13,7 @@ app = FastAPI(title="LoRRI AI API", version="1.0.0")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://alpha-hackers-2.onrender.com"],
+    allow_origins=["https://alpha-hackers.vercel.app"],
     allow_credentials=True,
     allow_methods=["POST", "GET"],
     allow_headers=["*"],
